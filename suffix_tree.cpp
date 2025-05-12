@@ -27,7 +27,9 @@ void SuffixTree::build() {
             
             char current_char = text[active_point.active_edge_pos];
             Node *current_node = active_point.active_node;
-            // rule 2
+            // rule 2, a new suffix is formed, therefore we need to initialize 
+            // the new edge and its leaf, as well adjusting the suffix link that might 
+            // exist
             if(current_node->next.find(current_char) == current_node->next.end()){
                 Edge *leaf_edge = new Edge();
 
@@ -48,9 +50,61 @@ void SuffixTree::build() {
                 } else {
                     active_point.active_node = current_node->suffix_link;
                 }
-            // rule 1 and 3
+            // rules 1 and 3
             } else {
+                Edge *current_edge = current_node->next[current_char];
+                int edge_length = *(current_edge->end) - current_edge->start + 1;
+                if(active_point.active_length >= edge_length){
+                    active_point.active_node = current_edge->dest;
+                    active_point.active_edge_pos += edge_length;
+                    active_point.active_length -= edge_length;
+                } else {
+                    if(text[current_edge->start + active_point.active_length] == text[pos]){
+                        if(last_new_internal){
+                            active_point.active_node->suffix_link = last_new_internal;
+                            last_new_internal = nullptr;
+                        }
+                        active_point.active_length++;
+                        break;
+                    } else {
+                        Node* split_node = new Node();
+                        Edge* split_edge = new Edge();
+                        
+                        int split_start = current_edge->start + active_point.active_length;
 
+                        split_edge->start = split_start;
+                        split_edge->end = current_edge->end;
+                        split_edge->dest = current_edge->dest;
+
+                        split_node->next[text[split_start]] = split_edge;
+
+
+                        Edge* new_leaf = new Edge();
+                        new_leaf->start = pos;
+                        new_leaf->end = global_end;
+                        new_leaf->dest = new Node();
+                        
+                        split_node->next[text[pos]] = new_leaf;
+                        
+                        current_edge->end = new int(split_start - 1);
+                        current_edge->dest = split_node;
+                        current_node->next[current_char] = current_edge;
+                    
+                        if(last_new_internal)
+                            last_new_internal->suffix_link = split_node;
+                        last_new_internal = split_node;
+                        remainder--;
+
+                        if(active_point.active_node == root) {
+                            active_point.active_edge_pos++;
+                            if (active_point.active_length > 0)
+                                active_point.active_length--;
+                        } else {
+                            active_point.active_node = active_point.active_node->suffix_link;
+                        }
+
+                    }
+                }
             }
         }
     }
