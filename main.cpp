@@ -6,5 +6,5 @@ int main(){
     std::cin >> s;
     SuffixTree suffix_tree(s);
 
-    // std::cout << suffix_tree << std::endl;
+    suffix_tree.print_tree();
 }

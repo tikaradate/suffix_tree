@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
 
 SRC = main.cpp suffix_tree.cpp
 HDR = suffix_tree.h

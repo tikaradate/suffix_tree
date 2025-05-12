@@ -1,13 +1,11 @@
 #include <map>
 #include <string>
 
-struct End{
-    int value;
-};
+struct Node;
 
 struct Edge{
     int start, *end;
-    int dest;
+    Node* dest;
 };
 
 struct Node{
@@ -25,13 +23,16 @@ class SuffixTree{
     public:
         SuffixTree(const std::string &s);
         void build();
+        void print_tree();
     
     private:
         std::string text;
         Node*       root;
-        End*        global_end;
+        int*        global_end;
         ActivePoint active_point;
         int         remainder;
         Node*       last_new_internal;
+        
+        void print_node(Node *node, int indent = 0);
 };
 
