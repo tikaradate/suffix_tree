@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include "./suffix_tree.h"
 
 SuffixTree::SuffixTree(const std::string &s)
@@ -130,5 +131,18 @@ void SuffixTree::print_node(Node *node, int indent){
         std::cout << text.substr(start, end - start + 1) << std::endl;
 
         print_node(edge->dest, indent + 1);
+    }
+}
+
+
+void SuffixTree::traverse(std::function<void(Node*, Edge*)> visitor) {
+    traverse_node(root, visitor);
+}
+
+
+void SuffixTree::traverse_node(Node* node, std::function<void(Node*, Edge*)> visitor) {
+    for (auto& [ch, edge] : node->next) {
+        visitor(node, edge);
+        traverse_node(edge->dest, visitor);
     }
 }
