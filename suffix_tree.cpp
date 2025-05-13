@@ -3,7 +3,8 @@
 #include "./suffix_tree.h"
 
 SuffixTree::SuffixTree(const std::string &s)
-    : text(s + "$"),
+    // : text(s + "$"), // segfaults for some reason
+    : text(s),
       remainder(0),
       last_new_internal(nullptr)
 {
@@ -135,14 +136,14 @@ void SuffixTree::print_node(Node *node, int indent){
 }
 
 
-void SuffixTree::traverse(std::function<void(Node*, Edge*)> visitor) {
-    traverse_node(root, visitor);
+void SuffixTree::traverse(std::function<void(Node*, Edge*, int)> visitor) {
+    traverse_node(root, visitor, 0);
 }
 
 
-void SuffixTree::traverse_node(Node* node, std::function<void(Node*, Edge*)> visitor) {
+void SuffixTree::traverse_node(Node* node, std::function<void(Node*, Edge*, int)> visitor, int depth) {
     for (auto& [ch, edge] : node->next) {
-        visitor(node, edge);
-        traverse_node(edge->dest, visitor);
+        visitor(node, edge, depth + (*(edge->end) - edge->start + 1)); 
+        traverse_node(edge->dest, visitor, depth + (*(edge->end) - edge->start + 1));
     }
 }

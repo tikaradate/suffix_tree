@@ -24,7 +24,7 @@ class SuffixTree{
         SuffixTree(const std::string &s);
         void build();
         void print_tree();
-        void traverse(std::function<void(Node*, Edge*)> visitor);
+        void traverse(std::function<void(Node*, Edge*, int depth)> visitor);
     
     private:
         std::string text;
@@ -35,6 +35,6 @@ class SuffixTree{
         Node*       last_new_internal;
         
         void print_node(Node *node, int indent = 0);
-        void traverse_node(Node* node, std::function<void(Node*, Edge*)> visitor);
+        void traverse_node(Node* node, std::function<void(Node*, Edge*, int)> visitor, int depth);
     };
 
