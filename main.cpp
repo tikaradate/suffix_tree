@@ -8,7 +8,7 @@ int main(){
 
     suffix_tree.print_tree();
 
-    suffix_tree.traverse([](Node* n, Edge* e) {
-        std::cout << "from " << e->start << " to " << *(e->end) << ", depth = " << *(e->end) << std::endl;
+    suffix_tree.traverse([](Node* n, Edge* e, int depth) {
+        std::cout << "from " << e->start << " to " << *(e->end) << ", depth = " << depth << std::endl;
     });
 }

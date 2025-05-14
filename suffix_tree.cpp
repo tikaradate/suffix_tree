@@ -1,10 +1,10 @@
 #include <iostream>
 #include <functional>
+#include <cassert>
 #include "./suffix_tree.h"
 
 SuffixTree::SuffixTree(const std::string &s)
-    // : text(s + "$"), // segfaults for some reason
-    : text(s),
+    : text(s + "$"),
       remainder(0),
       last_new_internal(nullptr)
 {
@@ -32,6 +32,7 @@ void SuffixTree::build() {
             // rule 2, a new suffix is formed, therefore we need to initialize 
             // the new edge and its leaf, as well adjusting the suffix link that might 
             // exist
+            assert(current_node != nullptr);
             if(current_node->next.find(current_char) == current_node->next.end()){
                 Edge *leaf_edge = new Edge();
 
@@ -50,7 +51,10 @@ void SuffixTree::build() {
                     if(active_point.active_length > 0)
                         active_point.active_length--;
                 } else {
-                    active_point.active_node = current_node->suffix_link;
+                    if(current_node->suffix_link)
+                        active_point.active_node = current_node->suffix_link;
+                    else
+                        active_point.active_node = root;
                 }
             // rules 1 and 3
             } else {
@@ -102,7 +106,10 @@ void SuffixTree::build() {
                             if (active_point.active_length > 0)
                                 active_point.active_length--;
                         } else {
-                            active_point.active_node = active_point.active_node->suffix_link;
+                            if(active_point.active_node->suffix_link)
+                                active_point.active_node = active_point.active_node->suffix_link;
+                            else 
+                                active_point.active_node = root;
                         }
 
                     }
