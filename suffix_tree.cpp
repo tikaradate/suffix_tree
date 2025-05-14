@@ -73,10 +73,30 @@ void SuffixTree::build() {
                         active_point.active_length++;
                         break;
                     } else {
+                        if (active_point.active_length == 0) {
+                            Edge *leaf_edge = new Edge();
+                            leaf_edge->start = pos;
+                            leaf_edge->end   = global_end;
+                            leaf_edge->dest  = new Node();
+                            current_node->next[text[pos]] = leaf_edge;
+                            if (last_new_internal) {
+                                last_new_internal->suffix_link = current_node;
+                                last_new_internal = nullptr;
+                            }
+                            remainder--;
+                            if (current_node == root) {
+                                active_point.active_edge_pos++;
+                            } else {
+                                active_point.active_node = 
+                                    (current_node->suffix_link ? current_node->suffix_link : root);
+                            }
+                            continue;
+                        }
                         Node* split_node = new Node();
                         Edge* split_edge = new Edge();
                         
                         int split_start = current_edge->start + active_point.active_length;
+                        assert(active_point.active_length > 0);
 
                         split_edge->start = split_start;
                         split_edge->end = current_edge->end;
@@ -150,7 +170,8 @@ void SuffixTree::traverse(std::function<void(Node*, Edge*, int)> visitor) {
 
 void SuffixTree::traverse_node(Node* node, std::function<void(Node*, Edge*, int)> visitor, int depth) {
     for (auto& [ch, edge] : node->next) {
-        visitor(node, edge, depth + (*(edge->end) - edge->start + 1)); 
-        traverse_node(edge->dest, visitor, depth + (*(edge->end) - edge->start + 1));
+        int length = (*(edge->end) - edge->start + 1);
+        visitor(node, edge, depth + length); 
+        traverse_node(edge->dest, visitor, depth + length);
     }
 }
